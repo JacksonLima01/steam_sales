@@ -1,0 +1,34 @@
+function jsonToCSV(jsonArray) {
+  if (!Array.isArray(jsonArray) || jsonArray.length === 0) {
+    return '';
+  }
+
+  // Pega as chaves do primeiro objeto como cabeçalhos das colunas
+  const headers = Object.keys(jsonArray[0]);
+
+  // Cria a primeira linha do CSV com os cabeçalhos
+  const csvRows = [headers.join(',')];
+
+  // Adiciona cada linha com os valores do JSON
+  for (const obj of jsonArray) {
+    const row = headers.map(header => {
+      const cell = obj[header] ?? ''; // Trata valores nulos ou indefinidos
+      return typeof cell === 'string' ? `"${cell}"` : cell; // Coloca aspas em strings
+    });
+    csvRows.push(row.join(','));
+  }
+
+  // Une todas as linhas com quebras de linha para formar o CSV
+  return csvRows.join('\n');
+}
+
+data = Array.from(document.querySelectorAll('#DataTables_Table_0 > tbody > tr')).map(el => {
+    name = el.querySelector('td:nth-child(3) > a').textContent
+    price = el.querySelector('td:nth-child(5)').textContent.slice(3).replace(/,/i, '.')
+    rating = (Number(el.querySelector('td:nth-child(6)').textContent.slice(0, -1)) / 100).toFixed(4)
+    release = new Date(el.querySelector('td:nth-child(7)').textContent).toISOString()
+
+    return ({name, price, rating, release})
+})
+
+jsonToCSV(data)
